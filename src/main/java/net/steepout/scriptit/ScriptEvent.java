@@ -75,4 +75,8 @@ public abstract class ScriptEvent {
         return get(key).isPresent();
     }
 
+    @Override
+    public String toString() {
+        return "[" + getClass().toString() + "]\nEvent Context:\n " + getContext().toString();
+    }
 }

@@ -13,3 +13,6 @@ function plugin(name) {
 function subscribe(type, callback) {
  jjs_pManager.subscribe(type, callback)
 }
+
+function jimport(clazz) {
+}

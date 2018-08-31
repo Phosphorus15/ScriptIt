@@ -27,11 +27,15 @@ public abstract class ScriptPluginManager {
     public abstract void setupEngine();
 
     /**
-     * @param source source of plugin , default '[string object]'
+     * @param source source of plugin , default '[object string]'
      * @param script code of script
      * @return plugin's id (determined & maintained by plugin manager)
      */
     public abstract String registerPlugin(String source, String script);
+
+    public String registerPlugin(String script) {
+        return registerPlugin("[object string]", script);
+    }
 
     public abstract void handleEvent(ScriptEvent event);
 

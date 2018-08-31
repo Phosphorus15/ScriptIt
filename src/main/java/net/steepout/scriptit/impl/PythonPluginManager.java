@@ -1,11 +1,13 @@
 package net.steepout.scriptit.impl;
 
-import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import net.steepout.scriptit.ScriptEvent;
 import net.steepout.scriptit.ScriptPlugin;
 import net.steepout.scriptit.ScriptPluginManager;
 import net.steepout.scriptit.events.PluginLoadEvent;
 import net.steepout.scriptit.misc.ScriptPluginException;
+import org.python.core.Py;
+import org.python.core.PyObject;
+import org.python.util.PythonInterpreter;
 
 import javax.script.Bindings;
 import javax.script.ScriptEngine;
@@ -17,18 +19,22 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.*;
 
-public class JSPluginManager extends ScriptPluginManager {
+public class PythonPluginManager extends ScriptPluginManager {
+
+    static {
+        new PythonInterpreter(); // register interpreter
+    }
 
     ScriptEngine engine;
 
     String initialBindings;
 
-    Map<String, List<ScriptObjectMirror>> eventBus = new HashMap<>();
+    Map<String, List<PyObject>> eventBus = new HashMap<>();
 
-    public JSPluginManager() {
-        super("javascript", new HashMap<>());
-        engine = Objects.requireNonNull(new ScriptEngineManager().getEngineByName("js"));
-        InputStream in = JSPluginManager.class.getResourceAsStream("/init.js");
+    public PythonPluginManager() {
+        super("python", new HashMap<>());
+        engine = Objects.requireNonNull(new ScriptEngineManager().getEngineByName("python"));
+        InputStream in = JSPluginManager.class.getResourceAsStream("/init.py");
         BufferedReader reader = new BufferedReader(new InputStreamReader(in));
         String str;
         StringBuilder buffer = new StringBuilder();
@@ -52,10 +58,10 @@ public class JSPluginManager extends ScriptPluginManager {
     }
 
     public void subscribe(String type, Object callback) {
-        if (callback instanceof ScriptObjectMirror) {
+        if (callback instanceof PyObject && ((PyObject) callback).isCallable()) {
             eventBus.compute(type, (s, list) -> {
                 if (list == null) list = new ArrayList<>();
-                list.add((ScriptObjectMirror) callback);
+                list.add((PyObject) callback);
                 return list;
             });
         }
@@ -64,21 +70,22 @@ public class JSPluginManager extends ScriptPluginManager {
     @Override
     public String registerPlugin(String source, String script) {
         Bindings bindings = engine.createBindings();
-        bindings.put("jjs_pManager", this);
+        bindings.put("jython_pManager", this);
         //noinspection CollectionAddedToSelf
-        bindings.put("jjs_bindings", bindings);
+        bindings.put("jython_bindings", bindings);
         try {
             engine.eval(initialBindings, bindings);
             engine.eval(script, bindings);
         } catch (ScriptException e) {
             throw new ScriptPluginException(e);
         }
-        String id = Objects.requireNonNull(bindings.get("jjs_id"), "a plugin script should always invoke plugin(name) for registration").toString();
+        String id = Objects.requireNonNull(bindings.get("jython_id"),
+                "a plugin script should always invoke plugin(name) or pluginc(...) for registration").toString();
         ScriptPlugin pluginObject = new JavaxScriptPlugin(bindings, id
-                , bindings.get("jjs_name").toString(), bindings.get("jjs_version").toString(),
-                "javascript", source, script);
+                , bindings.get("jython_name").toString(), bindings.get("jython_version").toString(),
+                "python", source, script);
         registeredPlugins.put(id, pluginObject);
-        bindings.put("self", pluginObject);
+        bindings.put("plugin", pluginObject);
         handleEvent(new PluginLoadEvent(this, pluginObject));
         return id;
     }
@@ -87,10 +94,10 @@ public class JSPluginManager extends ScriptPluginManager {
     public void handleEvent(ScriptEvent event) {
         Optional<String> type = event.get("eventType");
         if (type.isPresent()) {
-            List<ScriptObjectMirror> bus = eventBus.get(type.get());
+            List<PyObject> bus = eventBus.get(type.get());
             if (bus != null)
-                for (ScriptObjectMirror mirror : bus) {
-                    mirror.call(null, event);
+                for (PyObject mirror : bus) {
+                    mirror.__call__(Py.java2py(event));
                 }
         }
     }

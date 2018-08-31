@@ -1,5 +1,5 @@
 
-plugin("Test Plugin")
+plugin("Test Js Plugin")
 
 function onLoad(event) {
     print("plugin name : " + self.getName())
@@ -8,3 +8,4 @@ function onLoad(event) {
 }
 
 subscribe("pluginLoad", onLoad)
+alert('hey!')

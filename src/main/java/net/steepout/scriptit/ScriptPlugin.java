@@ -46,4 +46,9 @@ public abstract class ScriptPlugin {
     public String getScriptCodes() {
         return scriptCodes;
     }
+
+    @Override
+    public String toString() {
+        return "[" + getClass().toString() + "<" + getLanguage() + ">] " + getName() + "/" + getId() + " - version : " + getVersion();
+    }
 }
