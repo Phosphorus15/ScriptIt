@@ -1,8 +1,10 @@
 package net.steepout.scriptit;
 
+import net.steepout.scriptit.events.PluginUnloadEvent;
 import net.steepout.scriptit.misc.PluginUtils;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class ScriptPluginManager {
 
@@ -72,12 +74,48 @@ public abstract class ScriptPluginManager {
      * @param script code of script
      * @return plugin's id (determined & maintained by plugin manager)
      */
-    public abstract String registerPlugin(String source, String script);
+    public abstract ScriptPlugin registerPlugin(String source, String script);
 
-    public String registerPlugin(String script) {
+    public ScriptPlugin registerPlugin(String script) {
         return registerPlugin("[object string]", script);
     }
 
+    /**
+     * Trigger an event manually (the most common way for user-custom event)
+     * <p>
+     * any registered plugin which have subscribed the event would process it
+     *
+     * @param event the event to trigger
+     */
     public abstract void handleEvent(ScriptEvent event);
+
+    /**
+     * Trigger a event sequence (sequentially) in a async way
+     *
+     * @param events the events to trigger
+     * @see ScriptPluginManager#handleEvent
+     */
+    public void handleEventsAsync(ScriptEvent... events) {
+        new Thread(() -> {
+            for (ScriptEvent event : events) {
+                handleEvent(event);
+            }
+        }).start(); // bring up the thread
+    }
+
+    private AtomicBoolean hasUnloadHook = new AtomicBoolean();
+
+    /**
+     * By default, the event 'PluginUnload' would not be triggered when jvm shutdown, invoking this
+     * method can enable the function
+     */
+    public void registerUnloadHook() {
+        if (!hasUnloadHook.getAndSet(true))
+            Runtime.getRuntime().addShutdownHook(new Thread(this::unloadHook));
+    }
+
+    private void unloadHook() {
+        handleEvent(new PluginUnloadEvent(this, null)); // FIXME do ... unload
+    }
 
 }

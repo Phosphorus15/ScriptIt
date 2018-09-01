@@ -79,7 +79,7 @@ public class JSPluginManager extends ScriptPluginManager {
     }
 
     @Override
-    public String registerPlugin(String source, String script) {
+    public ScriptPlugin registerPlugin(String source, String script) {
         Bindings bindings = engine.createBindings();
         super.lobbies.forEach((lobby) -> importJavaClass(lobby.getName(), bindings));
         bindings.put("jjs_pManager", this);
@@ -98,7 +98,7 @@ public class JSPluginManager extends ScriptPluginManager {
         registeredPlugins.put(id, pluginObject);
         bindings.put("self", pluginObject);
         handleEvent(new PluginLoadEvent(this, pluginObject));
-        return id;
+        return pluginObject;
     }
 
     @Override

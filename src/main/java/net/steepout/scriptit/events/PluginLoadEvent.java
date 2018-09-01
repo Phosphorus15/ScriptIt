@@ -1,6 +1,6 @@
 package net.steepout.scriptit.events;
 
-import net.steepout.scriptit.ScriptEvent;
+import net.steepout.scriptit.ScriptEventImpl;
 import net.steepout.scriptit.ScriptPlugin;
 import net.steepout.scriptit.ScriptPluginManager;
 import net.steepout.scriptit.misc.Events;
@@ -12,7 +12,7 @@ import net.steepout.scriptit.misc.Events;
  * <p>
  * - plugin :: ScriptPlugin
  */
-public class PluginLoadEvent extends ScriptEvent {
+public class PluginLoadEvent extends ScriptEventImpl {
 
     static {
         Events.registerEvent(new PluginLoadEvent(null, null)); // example for events manager

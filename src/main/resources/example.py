@@ -2,7 +2,6 @@ pluginc("test", "Test Py Plugin", "1.0.0-SNAPSHOT")
 
 jimport("java.util.Base64")
 
-
 def onLoad(event):
     print event.get("pluginManager").get()
     print plugin == event.get("plugin").get()

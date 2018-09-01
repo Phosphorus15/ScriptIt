@@ -88,7 +88,7 @@ public class PythonPluginManager extends ScriptPluginManager {
     }
 
     @Override
-    public String registerPlugin(String source, String script) {
+    public ScriptPlugin registerPlugin(String source, String script) {
         Bindings bindings = engine.createBindings();
         lobbies.forEach(lobby -> importJavaClass(lobby.getName(), bindings));
         bindings.put("jython_pManager", this);
@@ -108,7 +108,7 @@ public class PythonPluginManager extends ScriptPluginManager {
         registeredPlugins.put(id, pluginObject);
         bindings.put("plugin", pluginObject);
         handleEvent(new PluginLoadEvent(this, pluginObject));
-        return id;
+        return pluginObject;
     }
 
     @Override

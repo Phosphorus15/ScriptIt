@@ -8,7 +8,7 @@ public class JavaxScriptPlugin extends ScriptPlugin {
 
     private Bindings currentBindings;
 
-    protected JavaxScriptPlugin(Bindings bindings, String id, String name, String version, String language, String source, String scriptCodes) {
+    JavaxScriptPlugin(Bindings bindings, String id, String name, String version, String language, String source, String scriptCodes) {
         super(id, name, version, language, source, scriptCodes);
         currentBindings = bindings;
     }
