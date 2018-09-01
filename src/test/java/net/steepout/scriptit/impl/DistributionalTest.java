@@ -7,6 +7,7 @@ import net.steepout.scriptit.misc.Events;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
 /**
@@ -35,13 +36,19 @@ public class DistributionalTest {
         frame.setSize(300, 500);
         frame.setLocationRelativeTo(null);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        Components.container = new JPanel();
-        Components.editor = new JTextArea("**Hello**! Write it here ~");
+        Components.container = frame.getContentPane();
+        Components.editor = new JTextArea("**Hello!* Write it __here_ ~");
         Font font = Components.editor.getFont();
         Components.editor.setFont(new Font(font.getName(), Font.PLAIN, 16));
         JScrollPane scrollPane = new JScrollPane(Components.editor);
         Components.frame.add(scrollPane);
         setMenuBar(frame);
+        Components.editor.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                manager.handleEventsAsync(new EditorEvent(Components.editor, e)); // pass event
+            }
+        });
         frame.setVisible(true);
     }
 
@@ -65,7 +72,7 @@ public class DistributionalTest {
             super("editorEvent", createMap(new Entry<>("editor", editor), new Entry<>("keyEvent", event)));
         }
 
-        public boolean isKeyEvent() {
+        public boolean isAWTKeyEvent() {
             return get("keyEvent").isPresent();
         }
 

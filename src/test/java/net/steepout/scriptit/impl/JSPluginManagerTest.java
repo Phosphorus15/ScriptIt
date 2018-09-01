@@ -6,6 +6,7 @@ import javax.script.Bindings;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
+import javax.swing.*;
 import java.util.Objects;
 
 import static org.junit.Assert.assertTrue;
