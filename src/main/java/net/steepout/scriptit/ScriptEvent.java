@@ -5,10 +5,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-public abstract class ScriptEvent {
+public abstract class ScriptEvent{
 
     private Map<String, Object> eventContext;
 
+    @SafeVarargs
     protected static Map<String, Object> createMap(Pair<String, Object>... attrs) {
         Map<String, Object> map = new HashMap<>();
         for (Pair<String, Object> p : attrs) {
@@ -69,6 +70,11 @@ public abstract class ScriptEvent {
         } catch (ClassCastException | NullPointerException e) {
             return Optional.empty();
         }
+    }
+
+    @SuppressWarnings("all")
+    public String getEventType() {
+        return (String) get("eventType").get();
     }
 
     public boolean hasKey(String key) {

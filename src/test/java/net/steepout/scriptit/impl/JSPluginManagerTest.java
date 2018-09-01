@@ -1,6 +1,5 @@
 package net.steepout.scriptit.impl;
 
-import net.steepout.scriptit.events.PluginLoadEvent;
 import net.steepout.scriptit.misc.ScriptPluginException;
 import org.junit.Test;
 
@@ -61,7 +60,7 @@ public class JSPluginManagerTest {
         } catch (IOException e) {
             throw new ScriptPluginException(e);
         }
-        manager.registerPlugin("[string object]", buffer.toString());
+        manager.registerPlugin(buffer.toString());
     }
 
 }

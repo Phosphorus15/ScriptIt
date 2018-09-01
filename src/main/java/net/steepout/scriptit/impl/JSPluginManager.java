@@ -5,6 +5,7 @@ import net.steepout.scriptit.ScriptEvent;
 import net.steepout.scriptit.ScriptPlugin;
 import net.steepout.scriptit.ScriptPluginManager;
 import net.steepout.scriptit.events.PluginLoadEvent;
+import net.steepout.scriptit.misc.Events;
 import net.steepout.scriptit.misc.ScriptPluginException;
 
 import javax.script.Bindings;
@@ -51,6 +52,13 @@ public class JSPluginManager extends ScriptPluginManager {
 
     }
 
+    @Override
+    public void setupEventSystem(Object base) {
+        if (base instanceof ScriptObjectMirror)
+            ((ScriptObjectMirror) base).putAll(Events.getAliases()); // put all aliases
+        else throw new ScriptPluginException("Unable to setup event system, invalid base object provided : " + base);
+    }
+
     public void subscribe(String type, Object callback) {
         if (callback instanceof ScriptObjectMirror) {
             eventBus.compute(type, (s, list) -> {
@@ -61,9 +69,19 @@ public class JSPluginManager extends ScriptPluginManager {
         }
     }
 
+    public void importJavaClass(String clazz, Bindings bindings) {
+        try {
+            Class<?> clazzObj = Class.forName(clazz);
+            engine.eval(String.format("%s = Java.type('%s')", clazzObj.getSimpleName(), clazz), bindings);
+        } catch (ClassNotFoundException | ScriptException e) {
+            throw new ScriptPluginException(e);
+        }
+    }
+
     @Override
     public String registerPlugin(String source, String script) {
         Bindings bindings = engine.createBindings();
+        super.lobbies.forEach((lobby) -> importJavaClass(lobby.getName(), bindings));
         bindings.put("jjs_pManager", this);
         //noinspection CollectionAddedToSelf
         bindings.put("jjs_bindings", bindings);

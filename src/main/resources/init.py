@@ -8,3 +8,10 @@ def plugin(name):
 
 def subscribe(type, function):
     jython_pManager.subscribe(type, function)
+
+def jimport(clazz):
+    jython_pManager.importJavaClass(clazz, jython_bindings)
+
+class Events: (); # defined as class round here
+
+jython_pManager.setupEventSystem(Events)

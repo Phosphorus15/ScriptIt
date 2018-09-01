@@ -14,5 +14,10 @@ function subscribe(type, callback) {
  jjs_pManager.subscribe(type, callback)
 }
 
+// fast import system
 function jimport(clazz) {
+ jjs_pManager.importJavaClass(clazz, jjs_bindings)
 }
+
+Events = new Object()
+jjs_pManager.setupEventSystem(Events) // native calls

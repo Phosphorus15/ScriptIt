@@ -13,7 +13,7 @@ public class JavaxScriptPlugin extends ScriptPlugin {
         currentBindings = bindings;
     }
 
-    public Bindings getCurrentBindings() {
+    public Bindings getBindings() {
         return currentBindings;
     }
 }
