@@ -1,6 +1,5 @@
 package net.steepout.scriptit.impl;
 
-import net.steepout.scriptit.misc.ScriptPluginException;
 import org.junit.Test;
 import org.python.util.PythonInterpreter;
 
@@ -8,10 +7,6 @@ import javax.script.Bindings;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.Objects;
 
 import static org.junit.Assert.fail;
@@ -51,17 +46,7 @@ public class PythonPluginManagerTest {
     @Test
     public void testHandler() {
         PythonPluginManager manager = new PythonPluginManager();
-        InputStream in = JSPluginManagerTest.class.getResourceAsStream("/example.py");
-        BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-        String str;
-        StringBuilder buffer = new StringBuilder();
-        try {
-            while ((str = reader.readLine()) != null) buffer.append(str).append('\n');
-            reader.close();
-        } catch (IOException e) {
-            throw new ScriptPluginException(e);
-        }
-        manager.registerPlugin("[string object]", buffer.toString());
+        manager.registerPlugin(IOUtils.readAllFromResource("/example.py"));
     }
 
 }

@@ -21,7 +21,7 @@ public class PluginLoadEvent extends ScriptEventImpl {
 
     @SuppressWarnings("unchecked")
     public PluginLoadEvent(ScriptPluginManager manager, ScriptPlugin pluginObject) {
-        super("pluginLoad", createMap(new Pair<>("pluginManager", manager), new Pair<>("plugin", pluginObject)));
+        super("pluginLoad", createMap(new Entry<>("pluginManager", manager), new Entry<>("plugin", pluginObject)));
     }
 
 }

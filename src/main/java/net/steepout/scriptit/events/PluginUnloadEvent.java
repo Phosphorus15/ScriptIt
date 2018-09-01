@@ -21,7 +21,7 @@ public class PluginUnloadEvent extends ScriptEventImpl {
 
     @SuppressWarnings("unchecked")
     public PluginUnloadEvent(ScriptPluginManager manager, ScriptPlugin pluginObject) {
-        super("pluginUnload", createMap(new Pair<>("pluginManager", manager), new Pair<>("plugin", pluginObject)));
+        super("pluginUnload", createMap(new Entry<>("pluginManager", manager), new Entry<>("plugin", pluginObject)));
     }
 
 }

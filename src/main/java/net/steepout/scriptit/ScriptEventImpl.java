@@ -9,20 +9,20 @@ public class ScriptEventImpl implements ScriptEvent {
     private Map<String, Object> eventContext;
 
     @SafeVarargs
-    protected static Map<String, Object> createMap(Pair<String, Object>... attrs) {
+    protected static Map<String, Object> createMap(Entry<String, Object>... attrs) {
         Map<String, Object> map = new HashMap<>();
-        for (Pair<String, Object> p : attrs) {
+        for (Entry<String, Object> p : attrs) {
             map.put(p.key, p.value);
         }
         return map;
     }
 
-    protected static class Pair<K, V> {
+    protected static class Entry<K, V> {
         K key;
 
         V value;
 
-        public Pair(K key, V value) {
+        public Entry(K key, V value) {
             this.key = key;
             this.value = value;
         }

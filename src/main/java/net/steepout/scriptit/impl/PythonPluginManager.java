@@ -81,6 +81,7 @@ public class PythonPluginManager extends ScriptPluginManager {
     public void importJavaClass(String clazz, Bindings bindings) {
         try {
             Class<?> clazzObj = Class.forName(clazz);
+            clazz = clazz.replace('$', '.'); // python restriction
             engine.eval(String.format("import %s; %s = %s;", clazz, clazzObj.getSimpleName(), clazz), bindings);
         } catch (ClassNotFoundException | ScriptException e) {
             throw new ScriptPluginException(e);
