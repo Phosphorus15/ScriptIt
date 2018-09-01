@@ -33,6 +33,7 @@ def load(event):
     splitpane.setDividerLocation(300)
     # refresh & reset window
     frame.setVisible(False)
+    Components.container = splitpane  # reset the primary container (for the sake of maintenance)
     frame.setContentPane(splitpane)  # substitute the window's root panel
     frame.setVisible(True)
     # start syncing
