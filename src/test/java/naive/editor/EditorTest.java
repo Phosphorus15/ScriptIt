@@ -3,9 +3,9 @@ package naive.editor;
 import net.steepout.scriptit.ScriptEventImpl;
 import net.steepout.scriptit.ScriptPlugin;
 import net.steepout.scriptit.ScriptPluginManager;
-import net.steepout.scriptit.impl.IOUtils;
 import net.steepout.scriptit.impl.PythonPluginManager;
 import net.steepout.scriptit.misc.Events;
+import net.steepout.scriptit.misc.IOUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -42,7 +42,8 @@ public class EditorTest {
         Components.editor.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
-                manager.handleEventsAsync(new EditorEvent(Components.editor, e)); // pass event
+                manager.handleEventsAsync(ex -> {
+                }, new EditorEvent(Components.editor, e)); // pass event
             }
         });
         // Show Window

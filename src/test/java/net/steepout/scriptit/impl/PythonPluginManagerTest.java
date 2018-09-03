@@ -1,5 +1,6 @@
 package net.steepout.scriptit.impl;
 
+import net.steepout.scriptit.misc.IOUtils;
 import org.junit.Test;
 import org.python.util.PythonInterpreter;
 

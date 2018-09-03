@@ -1,10 +1,17 @@
 package net.steepout.scriptit;
 
 import net.steepout.scriptit.events.PluginUnloadEvent;
+import net.steepout.scriptit.misc.IOUtils;
 import net.steepout.scriptit.misc.PluginUtils;
+import net.steepout.scriptit.misc.ScriptPluginException;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 
 public abstract class ScriptPluginManager {
 
@@ -22,6 +29,8 @@ public abstract class ScriptPluginManager {
     protected Map<String, ScriptPlugin> registeredPlugins;
 
     protected List<Class<?>> lobbies = new ArrayList<>();
+
+    protected List<String> startup = new ArrayList<>();
 
     protected ScriptPluginManager(String language, Map<String, ScriptPlugin> registeredPlugins) {
         this.language = language;
@@ -55,7 +64,11 @@ public abstract class ScriptPluginManager {
     }
 
     public void putStartupScript(String script) {
-        // TODO implement
+        startup.add(script);
+    }
+
+    public void putStartupScript(InputStream in) {
+        putStartupScript(IOUtils.readAllFromStream(in));
     }
 
     /**
@@ -76,6 +89,22 @@ public abstract class ScriptPluginManager {
      */
     public abstract ScriptPlugin registerPlugin(String source, String script);
 
+    public ScriptPlugin registerPlugin(String source, InputStream in) {
+        return registerPlugin(source, IOUtils.readAllFromStream(in));
+    }
+
+    public ScriptPlugin registerPlugin(InputStream in) {
+        return registerPlugin("[object stream]", in);
+    }
+
+    public ScriptPlugin registerPlugin(File file) {
+        try {
+            return registerPlugin(file.getAbsolutePath(), new FileInputStream(file));
+        } catch (FileNotFoundException e) {
+            throw new ScriptPluginException(e);
+        }
+    }
+
     public ScriptPlugin registerPlugin(String script) {
         return registerPlugin("[object string]", script);
     }
@@ -93,12 +122,17 @@ public abstract class ScriptPluginManager {
      * Trigger a event sequence (sequentially) in a async way
      *
      * @param events the events to trigger
+     * @param exceptionConsumer the consumer which to process any exception caused during the event
      * @see ScriptPluginManager#handleEvent
      */
-    public void handleEventsAsync(ScriptEvent... events) {
+    public void handleEventsAsync(Consumer<Exception> exceptionConsumer, ScriptEvent... events) {
         new Thread(() -> {
             for (ScriptEvent event : events) {
-                handleEvent(event);
+                try {
+                    handleEvent(event);
+                } catch (Exception e) {
+                    exceptionConsumer.accept(e);
+                }
             }
         }).start(); // bring up the thread
     }
